@@ -1,0 +1,36 @@
+{
+  "profiles": {
+    "papm": {
+      "name": "PAPM / Economics",
+      "school": "Carleton University",
+      "searchTerms": {
+        "gcJobs": ["economics student", "policy analyst student", "research assistant economics", "FSWEP economics", "data analyst student"],
+        "privateApi": ["economics intern", "policy analyst junior", "research assistant", "data analyst student", "public policy student"]
+      },
+      "keywords": ["economics", "policy", "research", "data analysis", "public administration", "statistics", "analyst"],
+      "excludeKeywords": ["senior", "manager", "director", "10+ years", "5+ years"],
+      "location": "Ottawa, ON"
+    },
+    "cyc": {
+      "name": "Youth & Child Care",
+      "school": "Algonquin College",
+      "searchTerms": {
+        "gcJobs": ["youth worker student", "child care worker", "social services student", "community programs youth", "FSWEP social services"],
+        "privateApi": ["child youth care worker", "youth worker", "camp counsellor", "social services worker", "child care assistant"]
+      },
+      "keywords": ["youth", "child", "care", "counsellor", "social services", "recreation", "community", "camp"],
+      "excludeKeywords": ["senior", "manager", "director", "10+ years", "5+ years", "licensed physician"],
+      "location": "Ottawa, ON"
+    }
+  },
+  "scanning": { "schedule": "twice-daily", "maxResultsPerSource": 25, "deduplicateByTitle": true, "maxAgeDays": 30 },
+  "notifications": {
+    "email": { "enabled": true, "smtpHost": "smtp.gmail.com", "smtpPort": 587, "senderEmail": "", "senderPassword": "", "recipients": { "papm": ["Henry@thesix.ca"], "cyc": ["Elliott@thesix.ca"] } },
+    "sms": { "enabled": false, "twilioAccountSid": "", "twilioAuthToken": "", "twilioPhoneNumber": "", "recipients": { "papm": [], "cyc": [] } }
+  },
+  "sources": {
+    "gcJobs": { "enabled": true, "baseUrl": "https://emploisfp-psjobs.cfp-psc.gc.ca/psrs-srfp/applicant/page1800", "rssUrl": "https://www.canada.ca/content/dam/canada/public-service-commission/migration/psrs-srfp/applicant/xml/jobs-emplois-eng.xml" },
+    "adzuna": { "enabled": true, "apiId": "", "apiKey": "", "baseUrl": "https://api.adzuna.com/v1/api/jobs/ca/search/1", "country": "ca" },
+    "charityVillage": { "enabled": true, "baseUrl": "https://charityvillage.com/jobs/" }
+  }
+}
