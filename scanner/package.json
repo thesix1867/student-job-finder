@@ -1,0 +1,20 @@
+{
+  "name": "student-job-scanner",
+  "version": "1.0.0",
+  "description": "Automated job scanner for student job listings",
+  "type": "module",
+  "main": "scan.js",
+  "scripts": {
+    "scan": "node scan.js",
+    "scan:papm": "node scan.js --profile papm",
+    "scan:cyc": "node scan.js --profile cyc",
+    "notify": "node notify.js",
+    "test": "node scan.js --dry-run"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "nodemailer": "^6.9.0",
+    "twilio": "^4.19.0",
+    "node-fetch": "^3.3.2"
+  }
+}
