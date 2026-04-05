@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Student Job Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --coral:#FF6B6B; --coral-light:#FFF0F0;
+  --orange:#FF9F43; --orange-light:#FFF5EB;
+  --purple:#A855F7; --purple-light:#F3E8FF;
+  --teal:#14B8A6; --teal-light:#CCFBF1;
+  --blue:#3B82F6; --blue-light:#DBEAFE;
+  --green:#22C55E; --green-light:#DCFCE7;
+  --pink:#EC4899; --pink-light:#FCE7F3;
+  --yellow:#EAB308; --yellow-light:#FEF9C3;
+  --bg:#FAFBFE; --card:#FFFFFF; --text:#1E293B;
+  --text-sec:#64748B; --text-light:#94A3B8;
+  --border:#E2E8F0; --radius:16px; --radius-sm:10px;
+  --shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.06);
+  --shadow-lg:0 4px 24px rgba(0,0,0,.1);
+  --tr:all .25s cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100dvh}
+button{font-family:inherit;cursor:pointer;border:none}
+a{text-decoration:none;color:inherit}
+input,select{font-family:inherit}
+
+/* ===== SCREENS ===== */
+.screen{display:none;min-height:100dvh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ===== WELCOME ===== */
+.welcome{align-items:center;justify-content:center;padding:2rem;text-align:center;
+  background:linear-gradient(160deg,#667eea 0%,#764ba2 50%,#f093fb 100%)}
+.welcome-inner{max-width:460px}
+.welcome-emoji{font-size:4rem;margin-bottom:1rem;animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.welcome h1{font-size:2.2rem;font-weight:800;color:#fff;margin-bottom:.5rem;letter-spacing:-.02em}
+.welcome p{color:rgba(255,255,255,.85);font-size:1.05rem;margin-bottom:2.5rem}
+.profile-cards{display:flex;flex-direction:column;gap:1rem}
+@media(min-width:560px){.profile-cards{flex-direction:row}}
+.profile-pick{background:rgba(255,255,255,.95);border-radius:var(--radius);padding:1.5rem;text-align:left;
+  transition:var(--tr);cursor:pointer;border:3px solid transparent;flex:1}
+.profile-pick:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.6)}
+.pick-emoji{font-size:2rem;margin-bottom:.5rem;display:block}
+.profile-pick h3{font-size:1.1rem;font-weight:700;margin-bottom:.2rem}
+.pick-school{font-size:.88rem;color:var(--text-sec)}
+
+/* ===== SETUP ===== */
+.setup{align-items:center;justify-content:center;padding:2rem;
+  background:linear-gradient(160deg,#667eea 0%,#764ba2 50%,#f093fb 100%)}
+.setup-card{background:var(--card);border-radius:20px;padding:2rem;max-width:480px;width:100%;box-shadow:var(--shadow-lg)}
+.setup-card h2{font-size:1.4rem;font-weight:800;margin-bottom:.3rem}
+.setup-sub{color:var(--text-sec);font-size:.9rem;margin-bottom:1.5rem}
+.setup-label{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-sec);margin-bottom:.5rem;display:block}
+.setup-input{width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;
+  outline:none;transition:var(--tr);margin-bottom:1.25rem}
+.setup-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,.15)}
+.chip-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
+.chip{padding:.5rem 1rem;border-radius:30px;font-size:.85rem;font-weight:600;cursor:pointer;
+  border:2px solid var(--border);background:var(--bg);transition:var(--tr);user-select:none}
+.chip.selected{border-color:var(--purple);background:var(--purple-light);color:var(--purple)}
+.chip:hover:not(.selected){border-color:var(--text-light)}
+.setup-btn{width:100%;padding:.9rem;border-radius:var(--radius-sm);font-size:1rem;font-weight:700;
+  background:linear-gradient(135deg,var(--purple),var(--coral));color:#fff;transition:var(--tr)}
+.setup-btn:hover{opacity:.9;transform:translateY(-1px)}
+
+/* ===== DASHBOARD ===== */
+.dashboard{background:var(--bg)}
+
+/* Top bar */
+.topbar{background:var(--card);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:.6rem}
+.topbar-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-weight:700;color:#fff}
+.topbar-name{font-weight:700;font-size:.95rem}
+.topbar-right{display:flex;gap:.5rem}
+.topbar-btn{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.45rem .8rem;
+  font-size:.82rem;font-weight:600;color:var(--text-sec);transition:var(--tr)}
+.topbar-btn:hover{background:var(--purple-light);color:var(--purple);border-color:var(--purple)}
+
+.main{max-width:720px;margin:0 auto;padding:1.25rem;padding-bottom:5rem}
+
+/* Greeting & Status */
+.greeting h2{font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+.greeting p{color:var(--text-sec);font-size:.92rem;margin-top:.15rem}
+.scan-status{display:inline-flex;align-items:center;gap:.4rem;background:var(--green-light);color:var(--green);
+  padding:.3rem .8rem;border-radius:20px;font-size:.78rem;font-weight:600;margin-top:.5rem}
+.scan-status.loading{background:var(--yellow-light);color:var(--yellow)}
+.scan-status.error{background:var(--coral-light);color:var(--coral)}
+.scan-dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Search */
+.search-wrap{position:relative;margin:1.25rem 0}
+.search-wrap input{width:100%;padding:.9rem 1rem .9rem 3rem;border:2px solid var(--border);border-radius:var(--radius);
+  font-size:.95rem;outline:none;transition:var(--tr);background:var(--card)}
+.search-wrap input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,.12)}
+.search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-light);pointer-events:none}
+
+/* Filters */
+.filter-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.filter-btn{padding:.4rem .85rem;border-radius:20px;font-size:.8rem;font-weight:600;
+  background:var(--card);border:1.5px solid var(--border);color:var(--text-sec);transition:var(--tr)}
+.filter-btn:hover,.filter-btn.active{background:var(--purple-light);border-color:var(--purple);color:var(--purple)}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.5rem}
+.stat-card{background:var(--card);border-radius:var(--radius-sm);padding:.9rem;box-shadow:var(--shadow);text-align:center}
+.stat-num{font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+.stat-label{font-size:.75rem;color:var(--text-sec);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.stat-card.govt .stat-num{color:var(--blue)}
+.stat-card.private .stat-num{color:var(--orange)}
+.stat-card.nonprofit .stat-num{color:var(--green)}
+
+/* Section title */
+.sec-title{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-sec);
+  margin:1.75rem 0 .75rem;display:flex;align-items:center;gap:.4rem}
+
+/* Job cards */
+.job-card{background:var(--card);border-radius:var(--radius);padding:1rem 1.1rem;box-shadow:var(--shadow);
+  margin-bottom:.65rem;transition:var(--tr);border-left:4px solid var(--border);display:flex;gap:.85rem;align-items:flex-start}
+.job-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.job-card.govt{border-left-color:var(--blue)}
+.job-card.private{border-left-color:var(--orange)}
+.job-card.nonprofit{border-left-color:var(--green)}
+.job-card.new{position:relative}
+.job-card.new::after{content:'NEW';position:absolute;top:8px;right:10px;background:var(--coral);color:#fff;
+  font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.03em}
+.job-icon{width:44px;height:44px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;flex-shrink:0}
+.job-icon.govt{background:var(--blue-light)}
+.job-icon.private{background:var(--orange-light)}
+.job-icon.nonprofit{background:var(--green-light)}
+.job-body{flex:1;min-width:0}
+.job-title{font-size:.93rem;font-weight:700;margin-bottom:.15rem;display:flex;align-items:center;gap:.5rem}
+.job-title a{color:var(--text);transition:var(--tr)}
+.job-title a:hover{color:var(--purple)}
+.job-meta{font-size:.8rem;color:var(--text-sec);display:flex;flex-wrap:wrap;gap:.3rem .8rem}
+.job-desc{font-size:.82rem;color:var(--text-light);margin-top:.35rem;line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.job-actions{display:flex;flex-shrink:0;gap:.3rem;align-items:flex-start}
+.job-action-btn{background:none;border:none;color:var(--text-light);font-size:1.05rem;padding:.3rem;
+  transition:var(--tr);border-radius:6px;cursor:pointer}
+.job-action-btn:hover{background:var(--purple-light);color:var(--purple)}
+.job-action-btn.saved{color:var(--orange)}
+
+/* Empty state */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-sec)}
+.empty-emoji{font-size:3rem;margin-bottom:.75rem;display:block}
+
+/* Quick search buttons */
+.quick-links{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1.5rem}
+@media(max-width:480px){.quick-links{grid-template-columns:1fr}}
+.quick-link{background:var(--card);border-radius:var(--radius-sm);padding:.9rem 1rem;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:.6rem;transition:var(--tr);cursor:pointer}
+.quick-link:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.ql-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.ql-text h4{font-size:.88rem;font-weight:700}
+.ql-text p{font-size:.76rem;color:var(--text-sec)}
+
+/* Tip cards */
+.tip-card{background:var(--card);border-radius:var(--radius);padding:1.15rem;box-shadow:var(--shadow);
+  margin-bottom:.65rem;border-left:4px solid var(--purple)}
+.tip-card h4{font-size:.92rem;font-weight:700;margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
+.tip-card p{font-size:.84rem;color:var(--text-sec)}
+.tip-card ul{margin:.35rem 0 0 1.1rem}
+.tip-card li{font-size:.84rem;color:var(--text-sec);margin-bottom:.15rem}
+
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);
+  display:flex;padding:.4rem .5rem;z-index:50}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:.12rem;padding:.45rem;
+  border-radius:8px;cursor:pointer;transition:var(--tr);color:var(--text-light)}
+.nav-item.active{color:var(--purple)}
+.nav-item:hover{background:var(--purple-light);color:var(--purple)}
+.nav-icon{font-size:1.2rem}
+.nav-label{font-size:.68rem;font-weight:600}
+.nav-badge{position:absolute;top:2px;right:calc(50% - 18px);background:var(--coral);color:#fff;font-size:.6rem;
+  font-weight:700;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
+
+/* Tab content */
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Saved tab */
+.saved-item{background:var(--card);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.5rem;
+  box-shadow:var(--shadow);display:flex;align-items:center;gap:.75rem}
+.saved-info{flex:1}
+.saved-info h4{font-size:.9rem;font-weight:700}
+.saved-info p{font-size:.8rem;color:var(--text-sec)}
+.remove-btn{background:none;border:none;color:var(--text-light);font-size:1.1rem;cursor:pointer;
+  padding:.3rem;transition:var(--tr)}
+.remove-btn:hover{color:var(--coral)}
+
+/* Loading shimmer */
+.shimmer{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);
+  background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius-sm);height:80px;margin-bottom:.65rem}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+
+<!-- ===== WELCOME ===== -->
+<div class="screen active" id="screen-welcome">
+  <div class="welcome">
+    <div class="welcome-inner">
+      <div class="welcome-emoji">&#127919;</div>
+      <h1>Student Job Finder</h1>
+      <p>Your personalized, auto-updating job dashboard. Pick your profile to get started.</p>
+      <div class="profile-cards">
+        <div class="profile-pick" onclick="startSetup('papm')">
+          <span class="pick-emoji">&#128200;</span>
+          <h3>PAPM / Economics</h3>
+          <p class="pick-school">Carleton University</p>
+        </div>
+        <div class="profile-pick" onclick="startSetup('cyc')">
+          <span class="pick-emoji">&#129309;</span>
+          <h3>Youth &amp; Child Care</h3>
+          <p class="pick-school">Algonquin College</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SETUP ===== -->
+<div class="screen" id="screen-setup">
+  <div class="setup">
+    <div class="setup-card">
+      <h2 id="setup-title">Customize Your Profile</h2>
+      <p class="setup-sub" id="setup-sub">Tell us what you're looking for.</p>
+      <label class="setup-label">Your first name</label>
+      <input class="setup-input" id="input-name" placeholder="e.g. Alex" autocomplete="off">
+      <label class="setup-label">What kinds of jobs interest you?</label>
+      <div class="chip-grid" id="chip-grid"></div>
+      <button class="setup-btn" onclick="finishSetup()">Let's Go &#128640;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="screen" id="screen-dashboard">
+  <div class="dashboard">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-avatar" id="topbar-avatar">A</div>
+        <span class="topbar-name" id="topbar-name">Alex</span>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" onclick="switchProfile()">&#128257; Switch</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- BROWSE TAB -->
+      <div id="tab-browse" class="tab-content active">
+        <div class="greeting" style="margin-bottom:.25rem">
+          <h2 id="greeting-text">Hey Alex! &#128075;</h2>
+          <p id="greeting-sub">Jobs curated for your field, updated automatically.</p>
+          <div class="scan-status loading" id="scan-status">
+            <span class="scan-dot"></span> <span id="scan-label">Loading jobs...</span>
+          </div>
+        </div>
+
+        <div class="search-wrap">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="main-search" placeholder="Filter jobs by title, company, or keyword..." oninput="filterJobs()">
+        </div>
+
+        <div class="filter-row" id="filter-row">
+          <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+          <button class="filter-btn" data-filter="government" onclick="setFilter('government',this)">&#127464;&#127462; Government</button>
+          <button class="filter-btn" data-filter="private" onclick="setFilter('private',this)">&#128188; Private</button>
+          <button class="filter-btn" data-filter="nonprofit" onclick="setFilter('nonprofit',this)">&#127793; Non-Profit</button>
+          <button class="filter-btn" data-filter="new" onclick="setFilter('new',this)">&#10024; New</button>
+        </div>
+
+        <div class="stats-row" id="stats-row">
+          <div class="stat-card govt"><div class="stat-num" id="stat-govt">0</div><div class="stat-label">Government</div></div>
+          <div class="stat-card private"><div class="stat-num" id="stat-private">0</div><div class="stat-label">Private</div></div>
+          <div class="stat-card nonprofit"><div class="stat-num" id="stat-nonprofit">0</div><div class="stat-label">Non-Profit</div></div>
+        </div>
+
+        <div class="sec-title">&#128188; Curated Listings</div>
+        <div id="job-list"></div>
+
+        <div class="sec-title">&#128269; Search Other Boards</div>
+        <div class="quick-links" id="quick-links"></div>
+
+        <div class="sec-title">&#128161; Quick Tips</div>
+        <div id="quick-tips"></div>
+      </div>
+
+      <!-- SAVED TAB -->
+      <div id="tab-saved" class="tab-content">
+        <div class="greeting" style="margin-bottom:1rem">
+          <h2>&#128278; Saved Jobs</h2>
+          <p>Jobs you've bookmarked for later.</p>
+        </div>
+        <div id="saved-list"></div>
+      </div>
+
+      <!-- TIPS TAB -->
+      <div id="tab-tips" class="tab-content">
+        <div class="greeting" style="margin-bottom:1rem">
+          <h2>&#128218; Tips &amp; Guides</h2>
+          <p>Practical advice for your student job search.</p>
+        </div>
+        <div id="all-tips"></div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="switchTab('browse')" id="nav-browse">
+        <span class="nav-icon">&#127968;</span><span class="nav-label">Jobs</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('saved')" id="nav-saved" style="position:relative">
+        <span class="nav-icon">&#128278;</span><span class="nav-label">Saved</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('tips')" id="nav-tips">
+        <span class="nav-icon">&#128218;</span><span class="nav-label">Tips</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   DATA & CONFIG
+   ================================================================ */
+const PROFILES = {
+  papm: {
+    label:'PAPM / Economics', school:'Carleton University',
+    gradient:'linear-gradient(135deg,#667eea,#764ba2)',
+    chips:['Economics','Policy Analysis','Research Assistant','Data Analysis','Public Administration',
+           'Statistics','Government','Think Tanks','Consulting','Bilingual Roles'],
+    defaultChips:['Economics','Policy Analysis','Research Assistant','Government'],
+    quickLinks:[
+      {emoji:'&#127464;&#127462;',title:'FSWEP',desc:'Federal Student Work Experience',
+       url:'https://emploisfp-psjobs.cfp-psc.gc.ca/psrs-srfp/applicant/page1800?poster=1&toggleLanguage=en',bg:'var(--blue-light)'},
+      {emoji:'&#128200;',title:'Indeed: Economics',desc:'Student & intern postings',
+       url:'https://ca.indeed.com/jobs?q=economics+student+intern&l=Ottawa%2C+ON&fromage=14',bg:'var(--orange-light)'},
+      {emoji:'&#127793;',title:'Charity Village',desc:'Non-profit policy roles',
+       url:'https://charityvillage.com/jobs/?keywords=policy+research+analyst&location=Ottawa',bg:'var(--green-light)'},
+      {emoji:'&#127891;',title:'Carleton Careers',desc:'Campus job board',
+       url:'https://carleton.ca/career/jobs-and-opportunities/',bg:'var(--purple-light)'}
+    ],
+    tips:[
+      {emoji:'&#127919;',title:'FSWEP Is Your Best Friend',
+       body:'The Federal Student Work Experience Program is the primary way students enter the public service. Applications open once or twice a year. Apply the moment it opens. Being in Ottawa is a big advantage.'},
+      {emoji:'&#128203;',title:'Build Your First-Year Resume',
+       items:['Relevant coursework counts as knowledge','Volunteering and extracurriculars show initiative','French proficiency is a major asset in Ottawa']},
+      {emoji:'&#127963;',title:'Economics-Specific Targets',
+       items:['Bank of Canada: research assistant and summer student roles','Statistics Canada: data collection and analysis','Think tanks: Conference Board, C.D. Howe, IRPP','Parliamentary Budget Officer: occasional student analyst openings']},
+      {emoji:'&#128101;',title:'Network Early',
+       items:['Set up a LinkedIn profile','Join the PAPM or economics student association','Attend campus career fairs','Ask family or friends in your field for informational chats']},
+      {emoji:'&#127891;',title:'Use Carleton Career Services',
+       body:'Free resume reviews, mock interviews, exclusive student job boards, and connections to co-op and placement opportunities.'}
+    ]
+  },
+  cyc: {
+    label:'Youth & Child Care', school:'Algonquin College',
+    gradient:'linear-gradient(135deg,#14B8A6,#22C55E)',
+    chips:['Child & Youth Worker','Social Services','Counselling','Community Programs','Recreation',
+           'Camp Counsellor','Group Homes','After-School Programs','Mental Health','Family Services'],
+    defaultChips:['Child & Youth Worker','Social Services','Counselling','Community Programs'],
+    quickLinks:[
+      {emoji:'&#127464;&#127462;',title:'FSWEP',desc:'Federal Student Work Experience',
+       url:'https://emploisfp-psjobs.cfp-psc.gc.ca/psrs-srfp/applicant/page1800?poster=1&toggleLanguage=en',bg:'var(--blue-light)'},
+      {emoji:'&#129309;',title:'Indeed: CYC',desc:'Child & youth care postings',
+       url:'https://ca.indeed.com/jobs?q=child+youth+care+worker+student&l=Ottawa%2C+ON&fromage=14',bg:'var(--orange-light)'},
+      {emoji:'&#127793;',title:'YSB Careers',desc:'Youth Services Bureau Ottawa',
+       url:'https://www.ysb.ca/careers/',bg:'var(--green-light)'},
+      {emoji:'&#127891;',title:'Algonquin Careers',desc:'Campus employment services',
+       url:'https://www.algonquincollege.com/employment-services/',bg:'var(--purple-light)'}
+    ],
+    tips:[
+      {emoji:'&#127919;',title:'FSWEP Is Open to You Too',
+       body:'College students qualify for FSWEP. Many federal departments need workers in community-facing roles. Being in Ottawa puts you close to the action.'},
+      {emoji:'&#128203;',title:'Build Your First-Year Resume',
+       items:['Coursework in child development and psychology counts','Babysitting, tutoring, and coaching are relevant','First aid and CPR certifications are a strong addition']},
+      {emoji:'&#129309;',title:'CYC-Specific Opportunities',
+       items:['Summer camps: City of Ottawa, Boys and Girls Club, YMCA/YWCA','Group homes: residential youth facilities hire part-time students','Youth Services Bureau: one of Ottawa\'s largest youth agencies','Volunteer first: many employers prefer candidates who\'ve volunteered with them']},
+      {emoji:'&#128196;',title:'Get Your Vulnerable Sector Check Early',
+       body:'Almost every CYC role requires a vulnerable sector check. Start yours early because it can take several weeks in Ottawa.'},
+      {emoji:'&#127891;',title:'Use Algonquin Career Services',
+       body:'Resume reviews, exclusive student job boards, mock interviews, and direct connections to placement opportunities.'},
+      {emoji:'&#128101;',title:'Network in the CYC Community',
+       items:['Join OACYC as a student member','Attend community events run by YSB, CAS, or local agencies','Ask placement coordinators about agencies that are actively hiring']}
+    ]
+  }
+};
+
+/* ================================================================
+   STATE
+   ================================================================ */
+let state = {profile:null,name:'',interests:[],savedJobs:[]};
+let jobData = {jobs:[],lastScan:null,newJobsThisScan:0};
+let currentFilter = 'all';
+let searchQuery = '';
+
+function loadState(){try{const s=localStorage.getItem('sjf2_state');if(s){state=JSON.parse(s);return true}}catch(e){}return false}
+function saveState(){try{localStorage.setItem('sjf2_state',JSON.stringify(state))}catch(e){}}
+
+/* ================================================================
+   SCREENS
+   ================================================================ */
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active')}
+
+function startSetup(profile){
+  state.profile=profile;
+  const d=PROFILES[profile];
+  document.getElementById('setup-title').innerHTML=d.label+' &#9889;';
+  document.getElementById('setup-sub').textContent=d.school+' \u2014 Select job interests.';
+  const grid=document.getElementById('chip-grid');grid.innerHTML='';
+  d.chips.forEach(c=>{const el=document.createElement('div');el.className='chip'+(d.defaultChips.includes(c)?' selected':'');
+    el.textContent=c;el.onclick=()=>el.classList.toggle('selected');grid.appendChild(el)});
+  showScreen('setup');document.getElementById('input-name').focus();
+}
+
+function finishSetup(){
+  state.name=document.getElementById('input-name').value.trim()||'there';
+  state.interests=[...document.querySelectorAll('.chip.selected')].map(c=>c.textContent);
+  saveState();loadJobData();showScreen('dashboard');
+}
+
+/* ================================================================
+   LOAD JOB DATA
+   ================================================================ */
+async function loadJobData(){
+  renderDashboardShell();
+  const status=document.getElementById('scan-status');
+  const label=document.getElementById('scan-label');
+  status.className='scan-status loading';label.textContent='Loading jobs...';
+
+  // Try loading from data/ directory (when hosted on GitHub Pages)
+  const jsonFile=`data/${state.profile}-jobs.json`;
+  try{
+    const res=await fetch(jsonFile);
+    if(res.ok){
+      jobData=await res.json();
+      status.className='scan-status';
+      const d=new Date(jobData.lastScan);
+      label.textContent=`Last scan: ${d.toLocaleDateString('en-CA')} at ${d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'})}`;
+      renderJobs();return;
+    }
+  }catch(e){}
+
+  // No live data yet: show sample listings with links
+  status.className='scan-status';
+  label.textContent='Live scanning not configured yet. Showing curated links.';
+  jobData={jobs:[],lastScan:null,newJobsThisScan:0};
+  renderJobs();
+}
+
+/* ================================================================
+   RENDER DASHBOARD
+   ================================================================ */
+function renderDashboardShell(){
+  const d=PROFILES[state.profile];
+  const avatar=document.getElementById('topbar-avatar');
+  avatar.textContent=state.name.charAt(0).toUpperCase();avatar.style.background=d.gradient;
+  document.getElementById('topbar-name').textContent=state.name;
+  const h=new Date().getHours();
+  const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('greeting-text').innerHTML=greet+', '+state.name+'! &#128075;';
+  document.getElementById('greeting-sub').textContent='Jobs curated for '+d.label+'.';
+
+  // Quick links
+  const ql=document.getElementById('quick-links');ql.innerHTML='';
+  d.quickLinks.forEach(l=>{
+    ql.innerHTML+=`<a class="quick-link" href="${l.url}" target="_blank" rel="noopener">
+      <div class="ql-icon" style="background:${l.bg}">${l.emoji}</div>
+      <div class="ql-text"><h4>${l.title}</h4><p>${l.desc}</p></div></a>`;
+  });
+
+  // Quick tips (first 2)
+  const qt=document.getElementById('quick-tips');qt.innerHTML='';
+  d.tips.slice(0,2).forEach(t=>{qt.innerHTML+=renderTip(t)});
+
+  // All tips
+  const at=document.getElementById('all-tips');at.innerHTML='';
+  d.tips.forEach(t=>{at.innerHTML+=renderTip(t)});
+
+  renderSaved();
+}
+
+function renderTip(t){
+  let h='<div class="tip-card"><h4>'+t.emoji+' '+t.title+'</h4>';
+  if(t.body)h+='<p>'+t.body+'</p>';
+  if(t.items){h+='<ul>';t.items.forEach(i=>h+='<li>'+i+'</li>');h+='</ul>'}
+  return h+'</div>';
+}
+
+/* ================================================================
+   RENDER JOBS
+   ================================================================ */
+function renderJobs(){
+  const list=document.getElementById('job-list');
+  const jobs=getFilteredJobs();
+
+  // Stats
+  const allJobs=jobData.jobs;
+  document.getElementById('stat-govt').textContent=allJobs.filter(j=>j.sourceType==='government').length;
+  document.getElementById('stat-private').textContent=allJobs.filter(j=>j.sourceType==='private').length;
+  document.getElementById('stat-nonprofit').textContent=allJobs.filter(j=>j.sourceType==='nonprofit').length;
+
+  if(allJobs.length===0){
+    list.innerHTML=`<div class="empty-state">
+      <span class="empty-emoji">&#128640;</span>
+      <p><strong>No scanned listings yet.</strong></p>
+      <p style="margin-top:.5rem">Once the scanner is running, curated job listings will appear here automatically. In the meantime, use the quick links below to search job boards directly.</p>
+    </div>`;
+    return;
+  }
+
+  if(jobs.length===0){
+    list.innerHTML=`<div class="empty-state">
+      <span class="empty-emoji">&#128269;</span>
+      <p>No jobs match your current filters. Try adjusting your search or filter.</p>
+    </div>`;
+    return;
+  }
+
+  // Determine which jobs are "new" (found within last 24 hours)
+  const dayAgo=Date.now()-86400000;
+
+  list.innerHTML=jobs.map(j=>{
+    const isNew=j.dateFound&&new Date(j.dateFound).getTime()>dayAgo;
+    const type=j.sourceType||'private';
+    const typeEmoji=type==='government'?'&#127464;&#127462;':type==='nonprofit'?'&#127793;':'&#128188;';
+    const isSaved=state.savedJobs.some(s=>s.url===j.url);
+    const encodedJob=btoa(unescape(encodeURIComponent(JSON.stringify({title:j.title,company:j.company,url:j.url,source:j.source}))));
+
+    return `<div class="job-card ${type}${isNew?' new':''}">
+      <div class="job-icon ${type}">${typeEmoji}</div>
+      <div class="job-body">
+        <div class="job-title"><a href="${j.url}" target="_blank" rel="noopener">${j.title}</a></div>
+        <div class="job-meta">
+          <span>${j.company}</span>
+          <span>${j.location||''}</span>
+          <span>${j.source}</span>
+          ${j.salary?'<span>'+j.salary+'</span>':''}
+        </div>
+        ${j.description?'<div class="job-desc">'+j.description+'</div>':''}
+      </div>
+      <div class="job-actions">
+        <button class="job-action-btn${isSaved?' saved':''}" onclick="toggleSaveJob('${encodedJob}',this)" title="Save">&#9733;</button>
+        <a class="job-action-btn" href="${j.url}" target="_blank" rel="noopener" title="Open">&#8599;</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getFilteredJobs(){
+  let jobs=jobData.jobs;
+  if(currentFilter==='new'){
+    const dayAgo=Date.now()-86400000;
+    jobs=jobs.filter(j=>j.dateFound&&new Date(j.dateFound).getTime()>dayAgo);
+  }else if(currentFilter!=='all'){
+    jobs=jobs.filter(j=>j.sourceType===currentFilter);
+  }
+  if(searchQuery){
+    const q=searchQuery.toLowerCase();
+    jobs=jobs.filter(j=>`${j.title} ${j.company} ${j.description||''} ${j.source}`.toLowerCase().includes(q));
+  }
+  return jobs;
+}
+
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderJobs();
+}
+
+function filterJobs(){
+  searchQuery=document.getElementById('main-search').value.trim();
+  renderJobs();
+}
+
+/* ================================================================
+   SAVED JOBS
+   ================================================================ */
+function toggleSaveJob(encoded,btn){
+  const job=JSON.parse(decodeURIComponent(escape(atob(encoded))));
+  const idx=state.savedJobs.findIndex(s=>s.url===job.url);
+  if(idx>-1){state.savedJobs.splice(idx,1);btn.classList.remove('saved')}
+  else{state.savedJobs.push(job);btn.classList.add('saved')}
+  saveState();renderSaved();
+}
+
+function removeSaved(url){
+  state.savedJobs=state.savedJobs.filter(j=>j.url!==url);
+  saveState();renderSaved();renderJobs();
+}
+
+function renderSaved(){
+  const list=document.getElementById('saved-list');
+  if(!state.savedJobs.length){
+    list.innerHTML='<div class="empty-state"><span class="empty-emoji">&#128278;</span><p>No saved jobs yet. Tap the star on any listing to save it here.</p></div>';
+    return;
+  }
+  list.innerHTML=state.savedJobs.map(j=>`<div class="saved-item">
+    <div class="saved-info"><a href="${j.url}" target="_blank" rel="noopener"><h4>${j.title}</h4></a><p>${j.company} &middot; ${j.source||''}</p></div>
+    <button class="remove-btn" onclick="removeSaved('${j.url.replace(/'/g,"\\'")}')">&times;</button>
+  </div>`).join('');
+}
+
+/* ================================================================
+   TABS
+   ================================================================ */
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+}
+
+function switchProfile(){
+  state={profile:null,name:'',interests:[],savedJobs:state.savedJobs};
+  saveState();currentFilter='all';searchQuery='';showScreen('welcome');
+}
+
+/* ================================================================
+   INIT
+   ================================================================ */
+if(loadState()&&state.profile&&state.name){loadJobData();showScreen('dashboard')}
+</script>
+</body>
+</html>
